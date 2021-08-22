@@ -24,7 +24,6 @@ const Home = ({ feed }) => {
         {feed.map((_feed, index) => (
           <div key={index}>
             {_feed.media_type === "IMAGE" ? (
-              <a href={_feed.permalink} rel="norefferer" target="_blank">
                 <Image
                   src={_feed.media_url}
                   alt={_feed.caption}
@@ -32,7 +31,6 @@ const Home = ({ feed }) => {
                   width={250}
                   objectFit="contain"
                 />
-              </a>
             ) : null}
           </div>
         ))}
@@ -45,7 +43,7 @@ export default Home;
 
 export const getServerSideProps = async () => {
   const _response = await axios.get(
-    `https://graph.instagram.com/me/media?fields=id,caption,permalink,media_url,media_type,timestamp&limit=20&access_token=${process.env.ACCESS_TOKEN}`
+    `https://graph.instagram.com/me/media?fields=id,caption,media_url,media_type,timestamp&limit=20&access_token=${process.env.ACCESS_TOKEN}`
   );
 
   return {
