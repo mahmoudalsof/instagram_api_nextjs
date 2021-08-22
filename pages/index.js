@@ -1,65 +1,56 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import axios from "axios";
+import Image from "next/image";
 
-export default function Home() {
+const Home = ({ feed }) => {
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
+    <div>
+      <div>
+        <h1 style={{ color: "white", textAlign: "center" }}>
+          Instagram API Example with Nextjs
         </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
+        <h3 style={{ color: "white", textAlign: "center" }}>
+          Just a simple app where an an instagram feed is fetched using the
+          Instagram API
+        </h3>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          rowGap: "20px",
+          columnGap: "20px",
+        }}
+      >
+        {feed.map((_feed, index) => (
+          <div key={index}>
+            {_feed.media_type === "IMAGE" ? (
+              <a href={_feed.permalink} rel="norefferer" target="_blank">
+                <Image
+                  src={_feed.media_url}
+                  alt={_feed.caption}
+                  height={250}
+                  width={250}
+                  objectFit="contain"
+                />
+              </a>
+            ) : null}
+          </div>
+        ))}
+      </div>
     </div>
-  )
-}
+  );
+};
+
+export default Home;
+
+export const getServerSideProps = async () => {
+  const _response = await axios.get(
+    `https://graph.instagram.com/me/media?fields=id,caption,permalink,media_url,media_type,timestamp&limit=20&access_token=${process.env.ACCESS_TOKEN}`
+  );
+
+  return {
+    props: {
+      feed: _response.data.data || [],
+    },
+  };
+};
